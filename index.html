@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Cotação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0;
+            font-size: 16px;
+            color: #555;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+        }
+        /* Estilo do modal */
+        .modal {
+            display: none; /* Escondido por padrão */
+            position: fixed; /* Fica fixo na tela */
+            z-index: 1; /* Fica acima de outros elementos */
+            left: 0;
+            top: 0;
+            width: 100%; /* Largura total */
+            height: 100%; /* Altura total */
+            overflow: auto; /* Habilita rolagem se necessário */
+            background-color: rgb(0,0,0); /* Cor de fundo */
+            background-color: rgba(0,0,0,0.4); /* Fundo com opacidade */
+            padding-top: 60px; /* Espaço acima do modal */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* Margem automática */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Largura do modal */
+            max-width: 400px; /* Largura máxima do modal */
+            border-radius: 8px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        /* Estilo da lista de cotações */
+        #quoteList {
+            list-style-type: none; /* Remove marcadores da lista */
+            padding: 0; /* Remove padding */
+        }
+        #quoteList li {
+            margin: 10px 0; /* Espaçamento entre os itens da lista */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Insira a Quantidade por Faixa Etária</h1>
+    <div class="container">
+        <form id="ageForm">
+            <label>0-18 anos:
+                <input type="number" name="ageGroup" data-value="100" min="0" placeholder="Quantidade">
+            </label>
+            <label>19-23 anos:
+                <input type="number" name="ageGroup" data-value="150" min="0" placeholder="Quantidade">
+            </label>
+            <label>24-28 anos:
+                <input type="number" name="ageGroup" data-value="200" min="0" placeholder="Quantidade">
+            </label>
+            <label>29-33 anos:
+                <input type="number" name="ageGroup" data-value="250" min="0" placeholder="Quantidade">
+            </label>
+            <label>34-38 anos:
+                <input type="number" name="ageGroup" data-value="300" min="0" placeholder="Quantidade">
+            </label>
+<label>39-43 anos:
+                <input type="number" name="ageGroup" data-value="350" min="0" placeholder="Quantidade">
+            </label>
+            <label>44-48 anos:
+                <input type="number" name="ageGroup" data-value="400" min="0" placeholder="Quantidade">
+            </label>
+            <label>49-53 anos:
+                <input type="number" name="ageGroup" data-value="450" min="0" placeholder="Quantidade">
+            </label>
+            <label>54-58 anos:
+                <input type="number" name="ageGroup" data-value="500" min="0" placeholder="Quantidade">
+            </label>
+            <label>59 anos ou mais:
+                <input type="number" name="ageGroup" data-value="600" min="0" placeholder="Quantidade">
+            </label>
+
+            <button type="button" onclick="calculateQuote()">Realizar Cotação</button>
+        </form>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Cotações Disponíveis</h2>
+            <ul id="quoteList"></ul>
+        </div>
+    </div>
+
+    <script>
+        function calculateQuote() {
+            const inputs = document.querySelectorAll('input[name="ageGroup"]');
+            let total = 0;
+
+            // Calculando o total baseado nas quantidades inseridas
+            inputs.forEach((input) => {
+                const quantity = parseInt(input.value) || 0; // Pega o valor ou 0 se não for um número
+                const value = parseInt(input.getAttribute('data-value')); // Pega o valor correspondente da faixa etária
+                total += quantity * value; // Multiplica a quantidade pelo valor
+            });
+
+            // Exibindo o resultado
+            document.getElementById('result').innerText = `Total da Cotação: R$ ${total.toFixed(2)}`;
+
+            // Calculando os valores para cada operadora
+            const sulAmericaValue = total * 1.1; // Exemplo: 10% a mais
+            const unimedValue = total * 1.2; // Exemplo: 20% a mais
+            const segurosUnimedValue = total * 1.15; // Exemplo: 15% a mais
+
+            // Atualizando a lista de cotações no modal
+            const quoteList = document.getElementById('quoteList');
+            quoteList.innerHTML = `
+                <li>Cotação Sul America: R$ ${sulAmericaValue.toFixed(2)}</li>
+                <li>Cotação Unimed: R$ ${unimedValue.toFixed(2)}</li>
+                <li>Cotação Seguros Unimed: R$ ${segurosUnimedValue.toFixed(2)}</li>
+            `;
+
+            // Exibindo o modal
+            document.getElementById('myModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = "none";
+        }
+
+        // Fechar o modal se o usuário clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('myModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
